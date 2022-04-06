@@ -31,7 +31,6 @@ public class Converter {
                 reader.lines().forEach(el -> {
                     StringBuilder str = analize(el);
                     stringBuilder.append(str + System.lineSeparator());
-                   // stringBuilder.append(el + System.lineSeparator());
                 } );
             } catch (Exception e) {
                 e.printStackTrace();
@@ -53,38 +52,84 @@ public class Converter {
         if (mas[3].contains("A")) {
             mas[3] = "B" + mas[3].substring(1);
         }
-        StringBuilder firstLine = makeFirstLine(mas);
-        StringBuilder secondLine =makeSecondLine(mas);
-        res.append(firstLine).append(secondLine);
+
+        if (mas[0].startsWith("C") & mas[3].startsWith("C")) {
+            res = makeThreeLine(mas);
+        } else {
+            StringBuilder firstLine = makeFirstLine(mas);
+            StringBuilder secondLine = makeSecondLine(mas);
+            res.append(firstLine).append(secondLine);
+        }
 
         return res;
     }
 
-    private StringBuilder makeFirstLine(String[] mas) {
+    private StringBuilder makeThreeLine(String[] strings) {
         StringBuilder res = new StringBuilder();
-        if (mas[0].startsWith("C127") & !mas[3].startsWith("C127")) {
-            mas[2] = mas[0].substring(1);
+        res.append(makeStringBuilder(strings) + System.lineSeparator());
+        List<String> mas = new ArrayList<>();
+        for (String str : strings) {
+            mas.add(str);
         }
-        for (String str : mas) {
-            res.append(str + " ");
+
+        mas.set(0, mas.get(3));
+        mas.set(1, mas.get(0).substring(1));
+
+        res.append(makeStringBuilder(mas) + System.lineSeparator());
+
+        List<String> mas1 = new ArrayList<>();
+        for (String str : strings) {
+            mas1.add(str);
+        }
+
+        mas1.set(2, mas1.get(0).substring(1));
+
+        res.append(makeStringBuilder(mas1));
+        return res;
+    }
+
+    private StringBuilder makeFirstLine(String[] strings) {
+        StringBuilder res = makeStringBuilder(strings);
+        if (strings[0].startsWith("C")) {
+            List<String> mas = new ArrayList<>();
+            for (String str : strings) {
+                mas.add(str);
+            }
+            mas.set(2, mas.get(0).substring(1));
+            res = makeStringBuilder(mas);
         }
         res.append(System.lineSeparator());
         return res;
     }
-
-    private StringBuilder makeSecondLine(String[] mas) {
+    private StringBuilder makeStringBuilder(String[] mas) {
         StringBuilder res = new StringBuilder();
-        mas[0] = mas[3];
-        if (mas[3].startsWith("C127")) {
-            mas[1] = mas[3].substring(1);
-        }
         for (String str : mas) {
             res.append(str + " ");
+        }
+        return res;
+    }
+    private StringBuilder makeStringBuilder(List<String> list) {
+        StringBuilder res = new StringBuilder();
+        for (String str : list) {
+            res.append(str + " ");
+        }
+        return res;
+    }
+
+        private StringBuilder makeSecondLine(String[] strings) {
+        strings[0] = strings[3];
+        StringBuilder res = makeStringBuilder(strings);
+        if (strings[3].startsWith("C")) {
+            List<String> mas = new ArrayList<>();
+            for (String str : strings) {
+                mas.add(str);
+            }
+            mas.set(1, mas.get(3).substring(1));
+            res = makeStringBuilder(mas);
         }
 
         return res;
     }
-
     private String rowChangeRules(String row) {
         if (row.startsWith("A44")) {
             row = "A44";
@@ -92,7 +137,7 @@ public class Converter {
             row = "A45";
         } else if (row.startsWith("A95")) {
             row = "A95";
-        } else if (row.startsWith("C127") | row.startsWith("C000")) {
+        } else if (row.startsWith("C")) {
             row = row.substring(0, row.length() - 2);
         }
         return row;
